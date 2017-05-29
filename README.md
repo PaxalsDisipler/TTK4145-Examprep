@@ -59,12 +59,18 @@ Responsibilities:
 * **Do the actual work**
 
 ### Log
+Each participant in a transaction writes a log of what it plan to do change if it were to commit, but not actually do the changes before it gets the `commit` instruction from the coordinator. Or it may do the changes but keep the log so that it know how to undo the changes if it were to receive `abort` from the coordinator.
+
+If all logs are kept it will give a full description of how the log have evolved over time, and allow for rolling back changes simply by _"playing the log backwards"_.
 
 ### Checkpoints
+In order to avoid the log growing beyond bounds as time progress, **checkpoints** can be written into the log at some point in the past where the system were in a safe consistent state. Retrieving the current state is then simply taking the checkpoint and apply all later log entries.
 
 ### Log Manager
+A routine responsible for managing all logging in a safe manner. This allows us to queue more log entries, and optimize storage access. If slow I/O to the storage, one might also save time by handing the log entry over to the _Log Manager_ and treat the entry as logged as soon as we get an reception acknowledgement, even though the entry isn't necessarily actually written to the storage.
 
 ### Lock Manager
+Manage access to lock protected resources, and keeps track of what resources participants have at any given time. This allow for the _Lock Manager_ to manage and allocate resources that may be common between more participants, and clean up locks after restarts etc. It is also possible to extend the _Lock Manager_ to include deadlock detection/prevention. 
 
 ### Optimistic Concurrency Control
 
