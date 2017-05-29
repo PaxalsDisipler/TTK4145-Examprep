@@ -9,6 +9,8 @@ Most transaction systems employ _pessimistic concurrency control_ where data str
 ###### Two-Phase Locking
 In order to preserve the _atomicity_ property of the transaction locks must be acquired and released in two phases. In the _growing phase_ locks may only be acquired, basically accumulating more and more locks. When all the necessary locks are acquired, the transaction enter the shrinking phase, where it may only shed the locks it already have and cannot acquire new ones.
 
+![](transaction-uml.png)
+
 ### Two-Phase Commit
 _Two-Phase commit_ is a technique to ensure atomicity of transactions, more specifically a protocol that ensure that a transaction either succeed or fail without side-effects. This ensure that the system is in a well defined state regardless of the outcome of the transaction. If the transaction fail all attempted (or actually executed) changes to the system state are rolled back to the state of the system before the transaction began. This is pretty much a classic example of _backward error-recovery_, but may not be that useful in a embedded system setting, as it often is hard/impossible to undo real-life side-effects - pretty hard to _unlaunch_ a rocket...
 
@@ -64,15 +66,16 @@ Each participant in a transaction writes a log of what it plan to do change if i
 If all logs are kept it will give a full description of how the log have evolved over time, and allow for rolling back changes simply by _"playing the log backwards"_.
 
 ### Checkpoints
-In order to avoid the log growing beyond bounds as time progress, **checkpoints** can be written into the log at some point in the past where the system were in a safe consistent state. Retrieving the current state is then simply taking the checkpoint and apply all later log entries.
+In order to avoid the log growing beyond bounds as time progress, **checkpoints** can be written into the log at some point in the past where the system were in a safe consistent state. Retrieving the current state is then simply taking the checkpoint and apply all later log entries. All log entries before the checkpoint is no longer needed, and can safely be deleted.
 
 ### Log Manager
 A routine responsible for managing all logging in a safe manner. This allows us to queue more log entries, and optimize storage access. If slow I/O to the storage, one might also save time by handing the log entry over to the _Log Manager_ and treat the entry as logged as soon as we get an reception acknowledgement, even though the entry isn't necessarily actually written to the storage.
 
 ### Lock Manager
-Manage access to lock protected resources, and keeps track of what resources participants have at any given time. This allow for the _Lock Manager_ to manage and allocate resources that may be common between more participants, and clean up locks after restarts etc. It is also possible to extend the _Lock Manager_ to include deadlock detection/prevention. 
+Manage access to lock protected resources, and keeps track of what resources participants have at any given time. This allow for the _Lock Manager_ to manage and allocate resources that may be common between more participants, and clean up locks after restarts etc. It is also possible to extend the _Lock Manager_ to include deadlock detection/prevention.
 
 ### Optimistic Concurrency Control
+
 
 ### Heuristic Transactions
 
