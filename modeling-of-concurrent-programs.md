@@ -1,5 +1,8 @@
 ###### Difference in design of message based interaction and shared variable synchronization
-Shared variable synchronization focuses on
+Shared variable synchronization focuses on problem avoidance by having more threads sharing common resources. The threads appear like regular problems working on data, apart from the added complexity of synchronization.
+
+Message passing systems ideally have no shared resources, each resource is managed by a thread, and other threads access this resource by communicating with this thread. Most threads in a message passing system is built around the `while-select` loop. Note that message passing systems usually have a lot more threads, since we have more reasons to create them. I.e. in order to manage resources.
+
 
 
 
