@@ -44,6 +44,8 @@ _Many of these are not very realistic_
 With the _simple task model_ from above we have the very simple assignment scheme for `FPS` known as **rate monotonic priority assignment**:
 > Each task is assigned an **unique** priority  based on its period. The shorter period, the higher the priority.
 
+**Note**: _If it doesn't work with this scheme, it won't work at all!_
+
 ###### Example
 ```
 | Task | T (period) | ==> | P (priority) |
@@ -55,24 +57,29 @@ With the _simple task model_ from above we have the very simple assignment schem
 |  e   | 75         | ==> | 2            |
 ```
 
-
-### Rate monotonic priority assignment
-* Each task is assigned an unique priority based on its period
-* Best solution: shorter period ==> higher priority
-  * If it doesn't work with this scheme, it won't work at all!
-
 ### Utilization-based analysis for FPS
 If the following condition is `true` then all N tasks will meet their deadline and we have a schedulable set of tasks:
   > ![](utilization-formula.png)
   >
-  > Assuming _the simple task model_ holds.
+  > Assuming _the simple task model_ holds. _U_ is the total utilization of the task set.
 
-<!---
-### Schedulabilty proofs
+We observe that for large _N_ the utilization will approach 69.3%, meaning that any taskset with utilization with less than 69.3% will **always** be schedulable when using _rate monotonic priority assignment_.
 
-### Response time analysis
--->
-### Priority Inversion
+Drawbacks for utilization-based tests are that they are not exact and they are not applicable to a more general task model.8
+
+### Response time analysis (RTA) for `FPS`
+RTA is done in two stages. First we predict the worst-case response time (_R_) for each task. The task with highest priority will have a response time equal to its computation time
+>![](rta1.png)
+
+ The other tasks will however suffer _interference_ from tasks with higher priority, so their worst-case response time is given by
+> ![](rta3.png)
+<!-- R_i=C_i + \underbrace{\sum_{j\in hp(i)} \left\lceil \frac{R_i}{T_j} \right\rceil C_j}_{\substack{\text{max interference}\\ \text{from other tasks}}} \quad \substack{hp(i): \text{ set of higher priority tasks}\\ j: \text{ task of higher priorit than }i\\ T_j: \text{ period of task }j} -->
+
+Or formulated as a recurrence:
+> ![](rta4.png)
+<!-- w_i^{n+1}=C_i + \mathlarger{\sum_{j\in hp(i)} \left\lceil \frac{w_i^n}{T_j} \right\rceil C_j } -->
+
+## Priority Inversion
 Lets assume we have a system consisting of three processes with different priorities, `T3` with hightest priority and `T1` with lowest, and one shared resource `R1` protected by a lock.
 
 ![](inversion.png)
