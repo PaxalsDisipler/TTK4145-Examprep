@@ -28,8 +28,33 @@ Two basic models of asynchronous notification, resumption and termination.
 * Testing can only show the presence of bugs, not the absence.
 * Testing cannot ensure a fault-free system!
 
+## Shared Variable Synchronization
+
+### Condition synchronization
+Needed when a task wishes to perform some action that requires another task to be in some predefined state, or after having performed some action.
+
+### Busy waiting
+* Can implement synchronization by having tasks set and check shared variables acting as **flags**.
+* Flag variables are called **spin locks**.
+* This approach works well for **condition synchronization**, but no simple method for **mutual exclusion** exists.
+* Busy wait algorithms are generally inefficient, as they involve tasks waiting and using up processing cycles without doing useful work.
+* Busy waiting can create a **livelock**.
+
+### Race condition
+* Two or more threads can access shared data and they both try to access it at the same time.
+* You don't know the order in which the threads will try to access the data.
+* Thread scheduling algorithm may switch between threads at any time.
+* The result of change in data is dependent on the thread scheduling algorithm.
+  * Both threads 'racing' to change the data.
+* To prevent race conditions
+  * Put locks around the shared data to ensure only one thread can access it at the same time.
+
 
 ## Modelling of Concurrent Programs
+###### Difference in design of message based interaction and shared variable synchronization
+Shared variable synchronization focuses on
+
+
 
 #### Concurrency
 * Two events are `concurrent` if we cannot tell by looking at the program which will happen first. Concurrent programs are non-deterministic, which makes the hard to debug.
@@ -59,15 +84,6 @@ There is generally no way of knowing before a thread decrements whether it will 
 ##
 
 
-### Race Condition
-* Two or more threads can access shared data and they both try to access it at the same time.
-* You don't know the order in which the threads will try to access the data.
-* Thread scheduling algorithm may switch between threads at any time.
-* The result of change in data is dependent on the thread scheduling algorithm.
-  * Both threads 'racing' to change the data.
-* To prevent race conditions
-  * Put locks around the shared data to ensure only one thread can access it at the same time.
-
 
 
 ## Exam Questions
@@ -82,10 +98,11 @@ There is generally no way of knowing before a thread decrements whether it will 
 
 ### Synchronization primitives in Ada
 #### __Protected Objects__
+Protected objects encapsulates data and allows only **mutually exclusive** access.
   * A module, private variables, functions, procedues and entries.
   * __Functions__ are read-only and have no side effects. They do not change the private variables of an object. They can therefore be called concurrently by several tasks, but not concurrently with procedures and entries.
   * __Procedues__ may have side effects, hence they can make changes to the state of the object. They have to run under mutual exclusion with other tasks.
-  * __Entries__ Protected by a boolean guard. Looks like a procedure call, but when the guard evaluates to false, the calling task is suspended (blocked).
+  * __Entries__ Protected by a boolean guard. Looks like a procedure call, but when the guard evaluates to false, the calling task is suspended (blocked). Note that guards cannot test on entry *parameters*.
 
 
 ### Deadlocks
