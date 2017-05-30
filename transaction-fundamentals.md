@@ -1,5 +1,5 @@
 ### Locking
-Locking ensure that intermediate states does not propagate out of our transaction. There should not be any communication with anyone outside of the transaction.
+Locking ensures that intermediate states does not propagate out of our transaction. There should not be any communication with anyone outside of the transaction.
 ##### Pessimistic Concurrency Control
 Most transaction systems employ `pessimistic concurrency control` where data structures and/or other resources is accessed the transaction(-participant) lock that resource to prevent others from meddling with it. Locks remain held on the resource for the duration of the transaction.
 * Disadvantages
