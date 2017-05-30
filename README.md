@@ -1,5 +1,6 @@
 # TTK4145-Examprep
 
+## [Fault Tolerance](fault-tolerance.md)
 ## [Transaction Fundamentals](transaction-fundamentals.md)
 ## [Atomic Actions](atomic-actions.md)
 ## [Shared Variable Synchronization](shared-variable-synchronization.md)
