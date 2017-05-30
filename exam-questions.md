@@ -42,3 +42,9 @@ Protected objects encapsulates data and allows only **mutually exclusive** acces
 ##### How would you structure your system in order to assure that all real-time demands are met?
 * Employ the __shared variable synchronization__ model. One thread per real time demand, assign priorities according to the deadlines (shortest deadline ==> highest priority). Keep track of resource usage for the different threads in order to comment on maximum blocking time.
 * To show that all real-time demands are met we estimate the worst-case execution and blocking times and then go through a schedulability proof.
+
+
+##### What do we gain by merging the failure modes?
+* Simplification of the system, if we are handling the worst case errors anyway, maybe we can handle other errors in the same way.
+* Error modes are a part of the module interface. Fewer error modes enhance modularity/maintenance by reducing the size of the interface.
+* We handle unexpected errors, since the merging of failure modes also can encompass unknown error modes

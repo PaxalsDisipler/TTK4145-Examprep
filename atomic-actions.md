@@ -14,9 +14,3 @@ Two basic models of asynchronous notification, resumption and termination.
 ##### Why avoid asynchronous transfer of control?
 * Leaves us in an undefined state.
 * ATC is okay if we have full control of the changed state and a lock manager which can unlock on behalf the killed thread.
-
-## Fault Tolerance
-* If faults occur we want to continue operation, albeit at a lower capacity.
-* The system should behave as specified even in the presence of bugs.
-* Testing can only show the presence of bugs, not the absence.
-* Testing cannot ensure a fault-free system!
