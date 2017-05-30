@@ -28,16 +28,17 @@ Protected objects encapsulates data and allows only **mutually exclusive** acces
 ### Misc
 * Transactions have only one error mode, abort. Aborting may not be an option when you have a deadline.
 
-###### Why is a system that guarantees that all deadlines are met often infeasible and/or too conservative?
+##### Why is a system that guarantees that all deadlines are met often infeasible and/or too conservative?
   * Theoretical worst-case execution time often enormously large in part because of hardware effects.
   * Thread interaction may be so complicated that they are excluded from the scheduling proof.
 
 * There are significantly more states in a sempahore-based shared variable system than in a message based system.
 
-###### Why are message passing systems traditionally not seen as well suited for implementing systems with real-time demands?
+##### Why are message passing systems traditionally not seen as well suited for implementing systems with real-time demands?
   * Schedulability proofs are not well developed.
   * Real-time systems have traditionally been closer to hardware, maybe even without an operating system. Hence, the message passing infrastructure might be unavailable.
   * Shared variable based real-time systems often employ one thread per timing demand, and handle threads with priorities. In message based systems we need to create a lot more threads, i.e. for managing resources. This makes it more difficult to assign priorities to threads in any meaningful way.
 
-###### How would you structure your system in order to assure that all real-time demands are met?
+##### How would you structure your system in order to assure that all real-time demands are met?
 * Employ the __shared variable synchronization__ model. One thread per real time demand, assign priorities according to the deadlines (shortest deadline ==> highest priority). Keep track of resource usage for the different threads in order to comment on maximum blocking time.
+* To show that all real-time demands are met we estimate the worst-case execution and blocking times and then go through a schedulability proof.
