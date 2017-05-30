@@ -1,6 +1,29 @@
 ## Fault Tolerance
 The basic idea with building a _fault tolerant_ system is to (ideally gracefully) handle both foreseen **and** unforeseen errors in the system. As the name hints at the unforeseen errors are the most challenging to handle.
 
+* If faults occur we want to continue operation, albeit at a lower capacity.
+* The system should behave as specified even in the presence of bugs.
+* Testing can only show the presence of bugs, not the absence.
+* Testing cannot ensure a fault-free system.
+* Testing cannot find errors in the specification.
+* Testing cannot find race conditions.
+
+Testing is not good enough! We must handle all errors, also the unexpected ones.
+
+#### How do we handle all the bugs still left in the system after testing?
+* __Fault tolerance__.
+* __Acceptance tests__ and __redundancy__.
+* __Merging of failure modes__.
+* Simpler overall system.
+* Simpler error handling.
+* Better modules.
+* Handling of unknown errors.
+
+Examples of merging of failure modes
+* __Communication error__: Lost message -> resend
+* __Software bugs__: Restart
+* __Exceptions__: Abort/Retry
+
 ### Terminology
 * **Fault**: the cause for an error. The actual bug, shortcoming, whatever that are the root cause for the problems.
   * **Transient faults**: fault that suddenly occurs, remain in the system for a while and then disappear again. Ex: faults due to external interference that come and go.
@@ -17,23 +40,6 @@ The basic idea with building a _fault tolerant_ system is to (ideally gracefully
 ```
 
 
-* If faults occur we want to continue operation, albeit at a lower capacity.
-* The system should behave as specified even in the presence of bugs.
-* Testing can only show the presence of bugs, not the absence.
-* Testing cannot ensure a fault-free system.
-  * Testing cannot find errors in the specification.
-  * Testing cannot find race conditions.
-
-Testing is not good enough! We must handle all errors, also the unexpected ones.
-
-#### How do we handle all the bugs still left in the system after testing?
-* __Fault tolerance__.
-  * __Acceptance tests__ and __redundancy__.
-  * __Merging of failure modes__.
-    * Simpler overall system.
-    * Simpler error handling.
-    * Better modules.
-    * Handling of unknown errors.
 
 
 ### Error detection
