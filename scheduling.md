@@ -11,7 +11,7 @@ If the predictions are decided prior to execution, the scheduling scheme is said
 1. Each task is assigned a __static__ default priority.
 2. Each resource has defined a __static__ ceiling value. This is the maximum priority of the tasks that use it.
 3. Tasks have a __dynamic__ priority that is the maximum of its own static priority and any priority it inherits due to it blocking higher-priority tasks.
-4. Tasks can only lock a resource if its dynamic priority is higher than the ceiling of any __currently__ locked resource.
+4. Tasks can only lock a resource if its dynamic priority is strictly higher than the ceiling of any __currently__ locked resource.
 
 The effect of the protocol is that a second resource can only be locked if there does not exist a higher priority task using both resources. Consequently, the maximum amount of time a task can be blocked is equal to the worst-case execution time of the longest critical section in any of the lower-priority tasks accessed by the higher-priority tasks.
 
