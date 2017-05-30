@@ -7,24 +7,65 @@ In concurrent programs, it is not necessary to specify the exact ordering in whi
 
 If the predictions are decided prior to execution, the scheduling scheme is said to be __static__. If run-time decisions are employed, it is __dynamic__. A scheduling scheme involves a priority assignment algorithm and a schedulability test.
 
-### The original ceiling priority protocol
-1. Each task is assigned a __static__ default priority.
-2. Each resource has defined a __static__ ceiling value. This is the maximum priority of the tasks that use it.
-3. Tasks have a __dynamic__ priority that is the maximum of its own static priority and any priority it inherits due to it blocking higher-priority tasks.
-4. Tasks can only lock a resource if its dynamic priority is strictly higher than the ceiling of any __currently__ locked resource.
+### Terminology
+* **worst case execution time, WCET** ( C )
+* **minimum period** ( T )
+* **deadline** ( D )
+* **Sufficient** : pass the test will meet deadlines
+* **Necessary**: fail the test will miss deadlines
+* **Exact**: necessary and sufficient
+* **Sustainable**: system status schedulable if conditions "improve" (this is oddly enough not always the case)
 
-The effect of the protocol is that a second resource can only be locked if there does not exist a higher priority task using both resources. Consequently, the maximum amount of time a task can be blocked is equal to the worst-case execution time of the longest critical section in any of the lower-priority tasks accessed by the higher-priority tasks.
+### Simple task model
+_Many of these are not very realistic_
+  * All applications is assumed consist of a fixed set of of tasks.
+  * All tasks are periodic, with known periods.
+  * The tasks are completely independent of each other.
+  * All system overheads, context-switching times and so on are ignored (ie. assumed to have zero cost).
+  * All tasks have a deadline equal to their period (that is, each task must complete before it is next released).
+  * All tasks have a fixed worst case execution time.
+  * No task contains any internal suspension points (e.g an internal delay statement or a blocking I/O operation)
+  * All task execute on a single CPU
 
-__Benefit__:
-* High-priority task only blocked once by a lower-priority task.
+##### Example
+```  
+  | Thread | T (period) | D (deadline) | C    |     // This *is* schedulable.
+  |--------|------------|--------------|------|
+  | T1     | 1s         | 1s           | 0.5s |
+  | T2     | 1s         | 1s           | 0.5s |
 
-__Disadvantage__:
-* More tasks will experience this block.
+  | Thread | T          | D            | C    |    // This is *not* schedulable!
+  |--------|------------|--------------|------|
+  | T1     | 1s         | 1s           | 0.9s |
+  | T2     | 1.8s       | 1.8s         | 0.1s |
+  ```
+
+### Fixed point scheduling (`FPS`)
+With the _simple task model_ from above we have the very simple assignment scheme for `FPS` known as **rate monotonic priority assignment**:
+> Each task is assigned an **unique** priority  based on its period. The shorter period, the higher the priority.
+
+###### Example
+```
+| Task | T (period) | ==> | P (priority) |
+|------|------------| ==> |--------------|
+|  a   | 25         | ==> | 5            |
+|  b   | 60         | ==> | 3            |
+|  c   | 42         | ==> | 4            |
+|  d   | 105        | ==> | 1            |
+|  e   | 75         | ==> | 2            |
+```
 
 
+### Rate monotonic priority assignment
+* Each task is assigned an unique priority based on its period
+* Best solution: shorter period ==> higher priority
+  * If it doesn't work with this scheme, it won't work at all!
 
-##### How does the priority ceiling protocol avoid deadlocks?
-* We know which resource a given thread uses, and that the priority of this resource is set to max+1 of all the using threads, it is impossible for any other thread owning a given resource to be interrupted by any other thread also wanting the same resource.
+### Utilization-based analysis for FPS
+If the following condition is `true` then all N tasks will meet their deadline and we have a schedulable set of tasks:
+  > ![](utilization-formula.png)
+  >
+  > Assuming _the simple task model_ holds.
 
 <!---
 ### Schedulabilty proofs
@@ -58,8 +99,30 @@ Lets assume we have a system consisting of three processes with different priori
 
  **Unbounded priority inversion** may as the name implies last for an indefinite amount of time, and can completely starve the higher priority task, and is a far more severe situation. The example above illustrates this. If there were several intermediate priority tasks the scheduler might jump back and forth between these for any arbitrary amount of time, effectively completely killing the high priority task.
 
-<!---
-### Ceiling/inheritance protocols
-* How it solve unbounded priority Inversion
-* How ceiling protocol avoid deadlocks
--->
+### The priority inheritance protocol
+One way of solving the priority inversion problem is **priority inheritance**. Whenever a higher priority task `T1` is blocked by a resource held by a lower priority task `T3`, `T3` gets its priority bumped up to the same priority that `T1` have as long as it holds on to the resource that block `T1`. This scheme does however **not** avoid deadlocks from occurring.
+
+**Benefits**:
+* Many real-time have resources that for the most part aren't contended. When a lock isn't contended no priorities need to change, and you avoid any overhead.
+**Disadvantages**:
+* If there are many contended resources and/or nested resource locks priority inheritance perform worse than the ceiling priority protocols.
+* You have no guarantees against deadlocks, which can be particularly dangerous if you have many nested resource dependencies.
+
+
+
+### The original ceiling priority protocol
+1. Each task is assigned a __static__ default priority.
+2. Each resource has defined a __static__ ceiling value. This is the maximum priority of the tasks that use it.
+3. Tasks have a __dynamic__ priority that is the maximum of its own static priority and any priority it inherits due to it blocking higher-priority tasks.
+4. Tasks can only lock a resource if its dynamic priority is strictly higher than the ceiling of any __currently__ locked resource.
+
+The effect of the protocol is that a second resource can only be locked if there does not exist a higher priority task using both resources. Consequently, the maximum amount of time a task can be blocked is equal to the worst-case execution time of the longest critical section in any of the lower-priority tasks accessed by the higher-priority tasks.
+
+__Benefits__:
+* High-priority task only blocked once by a lower-priority task.
+
+__Disadvantages__:
+* More tasks will experience this block.
+
+##### How does the priority ceiling protocol avoid deadlocks?
+* We know which resource a given thread uses, and that the priority of this resource is set to max+1 of all the using threads, it is impossible for any other thread owning a given resource to be interrupted by any other thread also wanting the same resource.

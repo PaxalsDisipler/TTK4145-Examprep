@@ -31,12 +31,13 @@ Examples of merging of failure modes
   * **Intermittent faults**: faults that occur from time to time. Ex: hardware that fail when it heats up.
 * **Error**: the event that a fault actually causes the system to misbehave.
 *  **Failure**: the deviation from the correct behavior the error causes.
+* **Failure mode**: ways in which we can fail
 ```
-┌───────────┐                 ┌────────────┐                 ┌────────────┐                 ┌───────────┐
-│           │  activation     │            │  propagation    │            │  causation      │           │
-│   fault   │────────────────▶│    error   │────────────────▶│  failure   │────────────────▶│   fault   │
-│           │                 │            │                 │            │                 │           │
-└───────────┘                 └────────────┘                 └────────────┘                 └───────────┘
+┌───────────┐               ┌────────────┐               ┌────────────┐               ┌───────────┐
+│           │  activation   │            │  propagation  │            │  causation    │           │
+│   fault   │──────────────▶│    error   │──────────────▶│  failure   │──────────────▶│   fault   │
+│           │               │            │               │            │               │           │
+└───────────┘               └────────────┘               └────────────┘               └───────────┘
 ```
 
 
