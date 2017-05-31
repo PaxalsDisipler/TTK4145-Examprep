@@ -14,10 +14,10 @@ Testing is not good enough! We must handle all errors, also the unexpected ones.
 * __Fault tolerance__.
 * __Acceptance tests__ and __redundancy__.
 * __Merging of failure modes__.
-* Simpler overall system.
-* Simpler error handling.
-* Better modules.
-* Handling of unknown errors.
+  * Simpler overall system.
+  * Simpler error handling.
+  * Better modules.
+  * Handling of unknown errors.
 
 Examples of merging of failure modes
 * __Communication error__: Lost message -> resend
@@ -64,7 +64,7 @@ Two main classes
     * __Dynamic reasonableness checks__
       * Output emitted from some digital controller, usually some relationship between consecutive outputs.
 
-We may also detect unexpected errors by the use of __acceptance tests__. We give demands to the corre state/result rather than testing on error situations. Lastly, we may have __static redundancy__. Given intermittent errors or independent systems, this catches errors that would otherwise be impossible.
+We may also detect unexpected errors by the use of __acceptance tests__. We give demands to the correct state/result rather than testing on error situations. Lastly, we may have __static redundancy__. Given intermittent errors or independent systems, this catches errors that would otherwise be impossible.
 
 ### Damage confinement and assessment
 We must assess the damage that may have occured. Damage confiement is about structuring the system in such a way as to minimize the effects of a faulty component. Two techniques, __modular decomposition__ and __atomic actions__. Interaction with components occurs through well-defined interfaces.

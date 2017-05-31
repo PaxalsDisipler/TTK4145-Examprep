@@ -48,3 +48,15 @@ Protected objects encapsulates data and allows only **mutually exclusive** acces
 * Simplification of the system, if we are handling the worst case errors anyway, maybe we can handle other errors in the same way.
 * Error modes are a part of the module interface. Fewer error modes enhance modularity/maintenance by reducing the size of the interface.
 * We handle unexpected errors, since the merging of failure modes also can encompass unknown error modes
+
+
+##### Why do we avoid using `notify()` and rather use `notifyAll()` combined with while-loops around all the `wait()`'s in Java?
+* If there are more reasons for waiting, you cannot easily know who is going to get awakened with the use of `notify()`. The system might misbehave if you awaken someone who's waiting for something other than what just got ready. From a module perspective, the use of `notify()` may demand knowledge of the usage patterns of the object -> not particularly good encapsulation!
+
+##### Drawbacks of `notifyAll()`
+
+* If we have a lot of readers and writers, waking all of them only to loop and go to sleep again is wasteful.
+
+
+##### How do we make the readers/writers locks safe against starvation?
+* Keep track of the order of requests. This leads to complete robustness against starvation of any writers. Alternatively we could assume that there are few writers, and hence give writers priority by keeping track of a waitingWriters variable and not letting any readers run while this is non-zero.
