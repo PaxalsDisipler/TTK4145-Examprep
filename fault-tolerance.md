@@ -44,7 +44,16 @@ Examples of merging of failure modes
 There are several techniques and tactics a programmer may choose in order to obtain some degree of fault tolerance in a system. All such techniques introduce some form of **redundancy** to the system in order both detect and recover from faults.
 
 ##### Process pair
-One of the simplest forms of redundancy is the _process pair_. With this scheme redundancy is introduced to a component by duplication. The original component is more or less kept as before, but an extra "identical" component is added as a backup. The key idea is that as soon as the primary experience an error, the backup kicks in and take over the responsibilities of the primary.
+One of the simplest forms of redundancy is the _process pair_. With this scheme redundancy is introduced to a component by duplication. The original component is more or less kept as before, but an extra "identical" component is added as a backup. The key idea is that as soon as the primary experience an error, the backup kicks in and take over the responsibilities of the primary. The standard mode of operation for the primary node in a process pair is
+```C
+while(true){
+  doWork();
+  performAcceptanceTest();
+  sendStatusToBackup();
+  doSideEffects();
+}
+```
+The **acceptance test** is important to avoid any errors from propagating from the primary to the backup.
 
 While the key idea is simple enough, there are some points to consider with this setup:
 * **The backup need some way of knowing when the primary malfunctions**. One way is for the primary to send **heartbeats** to the backup to signal that it's alive.

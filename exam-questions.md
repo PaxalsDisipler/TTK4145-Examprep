@@ -1,19 +1,34 @@
 ### Synchronization primitives in Java
 * __Synchronized methods__
   * Any method can be denoted `synchronized`, which means that it will run under mutual exclusion with every other synchronized method.
+
+  ```java
+  // Example
+  public class SyncronizedCounter{
+    private int c = 0;
+    public synchronized void increment() { c++; }
+    public synchronized void decrement() { c--; }
+    public synchronized int  getValue()  { return c; }
+  }
+  ```
 * `wait():` A call to wait will suspend the current thread. It will be resumed by a call to `notify()` or `notifyAll()`, or somebody calling `interrupt()` on the thread.
-* `notify()` wakes an arbitrary thread blocked by this objects lock.
+* `notify()` wakes an arbitrary thread blocked by this objects lock (although it in most cases be the thread with highest priority)
 * `notifyAll()` wakes all threads blocked by this objects lock.
 
 
 ### Synchronization primitives in Ada
-#### __Protected Objects__
+* __Protected Objects__ in Ada is somewhat analogous to the `synchronized` tag in Java, and ensure that there are **no (dangeorus) concurrent execution** of `entries`, `functions`* or `procedures` in the protected object. The way it differs from the `synchronized`-tag is that it apply to everything in the object, instead of one having to apply it to each method as shown in the Java example above.
+* `functions` are per definition __read-only__ and can therefor be safely called concurrently with each other, but not with `procedures` or `entries`.
+* `procedures` are free to make changes (__read-write__) to the protected object and must therefore run only under mutual exclusion.
+* `entries` are like `procedures` but their execution is protected by a guard (boolean test formulated using the objects private variables). When the test fail, the entry is not callable and the caller will block until the guard become true. `entries` are the only _entities_ a task may export. This mean that other other task may call exported `entries`, and this way communicate with the other task, this is called **Rendezvous**. The `entry` is executed by __**the called task**__, and __**the calling task**__ is blocked until the call completes. 
+
+<!--
 Protected objects encapsulates data and allows only **mutually exclusive** access.
   * A module, private variables, functions, procedues and entries.
   * __Functions__ are read-only and have no side effects. They do not change the private variables of an object. They can therefore be called concurrently by several tasks, but not concurrently with procedures and entries.
   * __Procedues__ may have side effects, hence they can make changes to the state of the object. They have to run under mutual exclusion with other tasks.
   * __Entries__ Protected by a boolean guard. Looks like a procedure call, but when the guard evaluates to false, the calling task is suspended (blocked). Note that guards cannot test on entry *parameters*.
-
+-->
 
 ### Deadlocks
 * Deadlocks and race conditions can happen in a message passing system.
