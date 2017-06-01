@@ -12,12 +12,12 @@
   }
   ```
 * `wait():` A call to wait will suspend the current thread. It will be resumed by a call to `notify()` or `notifyAll()`, or somebody calling `interrupt()` on the thread.
-* `notify()` wakes an arbitrary thread blocked by this objects lock (although it in most cases be the thread with highest priority)
+* `notify()` wakes an arbitrary thread blocked by this objects lock 
 * `notifyAll()` wakes all threads blocked by this objects lock.
 
 
 ### Synchronization primitives in Ada
-* __Protected Objects__ in Ada is somewhat analogous to the `synchronized` tag in Java, and ensure that there are **no (dangeorus) concurrent execution** of `entries`, `functions`* or `procedures` in the protected object. The way it differs from the `synchronized`-tag is that it apply to everything in the object, instead of one having to apply it to each method as shown in the Java example above.
+* __Protected Objects__ in Ada is somewhat analogous to the `synchronized` tag in Java, and ensure that there are **no (dangerous) concurrent execution** of `entries`, `functions`* or `procedures` in the protected object. The way it differs from the `synchronized`-tag is that it apply to everything in the object, instead of one having to apply it to each method as shown in the Java example above.
 * `functions` are per definition __read-only__ and can therefor be safely called concurrently with each other, but not with `procedures` or `entries`.
 * `procedures` are free to make changes (__read-write__) to the protected object and must therefore run only under mutual exclusion.
 * `entries` are like `procedures` but their execution is protected by a guard (boolean test formulated using the objects private variables). When the test fail, the entry is not callable and the caller will block until the guard become true. `entries` are the only _entities_ a task may export. This mean that other other task may call exported `entries`, and this way communicate with the other task, this is called **Rendezvous**. The `entry` is executed by __**the called task**__, and __**the calling task**__ is blocked until the call completes.
