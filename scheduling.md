@@ -17,13 +17,14 @@ If the predictions are decided prior to execution, the scheduling scheme is said
 * **Sustainable**: system status schedulable if conditions "improve" (this is oddly enough not always the case)
 
 ### Simple task model
-_Many of these are not very realistic_
-  * All applications is assumed consist of a fixed set of of tasks.
-  * All tasks are periodic, with known periods.
-  * The tasks are completely independent of each other.
-  * All system overheads, context-switching times and so on are ignored (ie. assumed to have zero cost).
-  * All tasks have a deadline equal to their period (that is, each task must complete before it is next released).
-  * All tasks have a fixed worst case execution time.
+_Many of these are not very realistic_.
+  * All applications are assumed to consist of a fixed set of of tasks. (No sporadic tasks. Not optimal, but can we worked around)
+  * All tasks are periodic, with known periods. (Realistic in many systems)
+  * The tasks are independent. (Completely realistic in an embedded system.)
+  * All system overheads, context-switching times and so on are ignored (i.e. assumed to have zero cost). (Depends)
+  * All tasks have a deadline equal to their period (that is, each task must complete before it is next released). (Inflexible, but fair enough)
+  * All tasks have a fixed worst case execution time. (Not realistic to know a tight, not overly conservative estimate.)
+  * Rate-monotonic priority ordering. (Our choice, so this is ok.)
   * No task contains any internal suspension points (e.g an internal delay statement or a blocking I/O operation)
   * All task execute on a single CPU
 
@@ -41,7 +42,7 @@ _Many of these are not very realistic_
   ```
 
 ### Fixed point scheduling (`FPS`)
-With the _simple task model_ from above we have the very simple assignment scheme for `FPS` known as **rate monotonic priority assignment**:
+With the _simple task model_ from above we have the following simple assignment scheme for `FPS` known as **rate monotonic priority assignment**:
 > Each task is assigned an **unique** priority  based on its period. The shorter period, the higher the priority.
 
 **Note**: _If it doesn't work with this scheme, it won't work at all!_
@@ -58,7 +59,7 @@ With the _simple task model_ from above we have the very simple assignment schem
 ```
 
 ### Utilization-based analysis for FPS
-If the following condition is `true` then all N tasks will meet their deadline and we have a schedulable set of tasks:
+If the following condition is `true` then all N tasks will meet their deadlines and we have a schedulable set of tasks:
   > ![](utilization-formula.png)
   >
   > Assuming _the simple task model_ holds. _U_ is the total utilization of the task set.
@@ -104,7 +105,7 @@ Lets assume we have a system consisting of three processes with different priori
 
  **This clearly violate our predefined priority-ordering: `priority inversion`!**
 
- There are two variants of the priority inversion problem. **Bounded priority inversion** is simply the situation where a lower priority task gets to run because it hold a lock that a higher priority task have blocked on. This would equal the example above if you were to remove the `T2` task. The duration of the priority inversion would then be given by the time spent in the `critical section` of the low priority task. Bounded priority inversion is generally not a big deal as long as the low-priority task executes in a timely manner.
+ There are two variants of the priority inversion problem. **Bounded priority inversion** is simply the situation where a lower priority task gets to run because it holds a lock that a higher priority task have blocked on. This would equal the example above if you were to remove the `T2` task. The duration of the priority inversion would then be given by the time spent in the `critical section` of the low priority task. Bounded priority inversion is generally not a big deal as long as the low-priority task executes in a timely manner.
 
  **Unbounded priority inversion** may as the name implies last for an indefinite amount of time, and can completely starve the higher priority task, and is a far more severe situation. The example above illustrates this. If there were several intermediate priority tasks the scheduler might jump back and forth between these for any arbitrary amount of time, effectively completely killing the high priority task.
 
@@ -132,6 +133,23 @@ __Benefits__:
 
 __Disadvantages__:
 * More tasks will experience this block.
+
+### The immediate ceiling priority protocol
+* Each task is assigned a __static__ default priority.
+* Each resource has defined a __static__ ceiling value. This is the maximum priority of the tasks that use it.
+* Tasks have a __dynamic__ priority which is the maximum of its static default priority and any it may have inherited from locking a resource.
+
+
+#### Differences between OCPP and ICPP
+* ICCP is easier to implement as we don't have to monitor blocking relationships.
+* ICCP leads to fewer context switches as blocking is prior to first execution.
+* ICCP requires more priority movements, OCCP only changes priority when an actual block occurs.
+
+#### When either protocol is employed we achieve:
+* a high-priority task can be blocked at most once during its execution by a lower priority task;
+* deadlocks are avoided;
+* transitive blocking is prevented;
+* mutual exclusive access to resources is assured.
 
 ##### How does the priority ceiling protocol avoid deadlocks?
 * We know which resource a given thread uses, and that the priority of this resource is set to max+1 of all the using threads, it is impossible for any other thread owning a given resource to be interrupted by any other thread also wanting the same resource.
