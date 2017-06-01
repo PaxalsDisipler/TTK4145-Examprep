@@ -79,6 +79,8 @@ Or formulated as a recurrence:
 > ![](rta4.png)
 <!-- w_i^{n+1}=C_i + \mathlarger{\sum_{j\in hp(i)} \left\lceil \frac{w_i^n}{T_j} \right\rceil C_j } -->
 
+If the worst-case response time (the solution to the last recurrence) is within the deadline then the system is schedulable.
+
 ## Priority Inversion
 Lets assume we have a system consisting of three processes with different priorities, `T3` with hightest priority and `T1` with lowest, and one shared resource `R1` protected by a lock.
 

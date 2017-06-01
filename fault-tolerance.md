@@ -20,7 +20,7 @@ Testing is not good enough! We must handle all errors, also the unexpected ones.
   * Handling of unknown errors.
 
 Examples of merging of failure modes
-* __Communication error__: Lost message -> resend
+* __Communication error__: Lost/corrupted/too late message -> resend
 * __Software bugs__: Restart
 * __Exceptions__: Abort/Retry
 
@@ -39,6 +39,20 @@ Examples of merging of failure modes
 │           │               │            │               │            │               │           │
 └───────────┘               └────────────┘               └────────────┘               └───────────┘
 ```
+
+### Fault tolerance tactics
+There are several techniques and tactics a programmer may choose in order to obtain some degree of fault tolerance in a system. All such techniques introduce some form of **redundancy** to the system in order both detect and recover from faults.
+
+##### Process pair
+One of the simplest forms of redundancy is the _process pair_. With this scheme redundancy is introduced to a component by duplication. The original component is more or less kept as before, but an extra "identical" component is added as a backup. The key idea is that as soon as the primary experience an error, the backup kicks in and take over the responsibilities of the primary.
+
+While the key idea is simple enough, there are some points to consider with this setup:
+* **The backup need some way of knowing when the primary malfunctions**. One way is for the primary to send **heartbeats** to the backup to signal that it's alive.
+* **If the component have an internal state the backup need to know about this in order to seamlessly take over.** This may be solved by sending the complete state as part of the heartbeats that the primary sends, or if the state is too large for this to be feasible just send _deltas_ (changes to the state).
+* **You  may want to implement the primary and backup differently to prevent both having the same fault.** If the backup is an identical clone of the primary, and not just a duplicate of the functionality you don't really do anything to mitigate faults stemming from software bugs, specification errors etc. You may also want to consider placing the backup in a different physical location and/or environment if this is possible.
+* **A process pair may simplify and help both maintenance and future upgrades.** With a setup that provide one layer of redundancy provides a huge convenience if you want to repair or upgrade the component, as you simply can yank one out, swap it with a new one, and do the same thing with the other without ever having to shut down the system.  
+
+##### N-version programming
 
 
 
