@@ -40,7 +40,7 @@ Examples of merging of failure modes
 └───────────┘               └────────────┘               └────────────┘               └───────────┘
 ```
 
-### Fault tolerance tactics
+### Fault tolerance techniques
 There are several techniques and tactics a programmer may choose in order to obtain some degree of fault tolerance in a system. All such techniques introduce some form of **redundancy** to the system in order both detect and recover from faults.
 
 ##### Process pair
@@ -50,10 +50,46 @@ While the key idea is simple enough, there are some points to consider with this
 * **The backup need some way of knowing when the primary malfunctions**. One way is for the primary to send **heartbeats** to the backup to signal that it's alive.
 * **If the component have an internal state the backup need to know about this in order to seamlessly take over.** This may be solved by sending the complete state as part of the heartbeats that the primary sends, or if the state is too large for this to be feasible just send _deltas_ (changes to the state).
 * **You  may want to implement the primary and backup differently to prevent both having the same fault.** If the backup is an identical clone of the primary, and not just a duplicate of the functionality you don't really do anything to mitigate faults stemming from software bugs, specification errors etc. You may also want to consider placing the backup in a different physical location and/or environment if this is possible.
-* **A process pair may simplify and help both maintenance and future upgrades.** With a setup that provide one layer of redundancy provides a huge convenience if you want to repair or upgrade the component, as you simply can yank one out, swap it with a new one, and do the same thing with the other without ever having to shut down the system.  
+* **A process pair may simplify and help both maintenance and future upgrades.** With a setup that provide one layer of redundancy provides a huge convenience if you want to repair or upgrade the component, as you simply can yank one out, swap it with a new one, and do the same thing with the other without ever having to shut down the system.
+* **A process pair may provide provide excellent _availability_**. Ideally when an error have occurred in the primary, the backup steps right in minimizing any service downtime. 
 
 ##### N-version programming
+Expanding on the key idea of _process pairs_, **N-version programming** can be a fruitful technique for components doing critical computations. As the name imply _**N**_ functionally equivalent programs do the same task, where _**N**_ is ideally greater than 2 and often an odd number to ensure a majority. All results are at the end of the computation compared, and a majority vote decide what result that gets passed on from the component.
 
+```
+Example: All should compute f(x)=y 
+                                        cosmic ray                         
+                                            ╱                              
+                                           ╱                               
+                                          ╱                                
+                                         ╱                                 
+                          ┌─────────────╳────────┐                         
+                          │                      │                         
+                 x        │                      │  z                      
+            ┌────────────▶│      version 1       │────────────┐            
+            │             │                      │            │            
+            │             │                      │            │            
+            │             └──────────────────────┘            │            
+            │             ┌──────────────────────┐            Λ            
+            │             │                      │           ╱ ╲           
+   x        │    x        │                      │  y       ╱   ╲   y      
+────────────┼───────────▶ │      version 2       │─────────▕     ▏────────▶
+            │             │                      │          ╲   ╱          
+            │             │                      │           ╲ ╱           
+            │             └──────────────────────┘            V            
+            │             ┌──────────────────────┐            │            
+            │             │                      │            │            
+            │    x        │                      │  y         │            
+            └────────────▶│      version 3       │────────────┘            
+                          │                      │                         
+                          │                      │                         
+                          └──────────────────────┘     
+```
+
+Again are the key conceptually pretty straight forward, but any implementation must be subject to several considerations:
+* **Floating points introduce inaccuracies that make comparison less trivial.** If the output from each version is an integer any comparison is a piece of cake, but any floating point have a finite precision and direct comparison of two floats are generally a bad idea. Instead one must resort to comparing values to each other inexact with some threshold, introducing extra complexity (rarely a good thing...). Furthermore if the computation rely on some form of conditional program flow, a small difference in floating point-rounding in the different versions can make one version take a completely different execution path than the others and thus get a wildly different answer at the end.
+* **The versions should fail completely independently - use different programming languages etc.** N-version programming hinges on the assumption that the problem can be fully specified and the different versions should therefore be possible to develop completely independently from each other using different development environments, languages etc. Ideally they should also be distributed across different hardware and placed in different physical environments to protect against physical faults.
+* **With N-version programming you are basically doing N times the work at N times the expense**. This may seem obvious, but redundancy come at a cost, both in $$$ but also in increased complexity.
 
 
 
