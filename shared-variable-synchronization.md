@@ -34,9 +34,11 @@ A kind of synchronization primitive. `wait` always blocks. `signal` releases a b
 * This approach works well for **condition synchronization**, but no simple method for **mutual exclusion** exists.
 * Busy wait algorithms are generally inefficient, as they involve tasks waiting and using up processing cycles without doing useful work.
 * Busy waiting can create a **livelock**.
+* Busy waiting can be desirable in cases where you wish to react as fast as possible changes in the blocking condition. Ie. in those (presumably) rare cases where waiting for the scheduler to handle the unblocking takes too long.
+* Some locking-libraries/implementations also use **spin-locking** before a regular lock if the resource cannot be acquired in a reasonable amount of time. This is done to reduce overhead for context-switching in enviroments where locks usually are quickly obtained.
 
 ### Suspend and resume
-* Motivatived by the fact that busy-wait loops wastes processor time.
+* Motivated by the fact that busy-wait loops wastes processor time.
 * Suspend the calling task if the condition for which it is waiting does not hold.
 * Suffers from a race condition.
 * __Solution__: Two-stage suspend.
@@ -44,6 +46,7 @@ A kind of synchronization primitive. `wait` always blocks. `signal` releases a b
 
 
 ### Race condition
+**Race conditions** refer behavior in a system where the result/effects/output are dependent on the sequence or timing of concurrently executing tasks. The most common version of this is the **data race condition**:
 * Two or more threads can access shared data and they both try to access it at the same time.
 * You don't know the order in which the threads will try to access the data.
 * Thread scheduling algorithm may switch between threads at any time.
@@ -52,9 +55,15 @@ A kind of synchronization primitive. `wait` always blocks. `signal` releases a b
 * To prevent race conditions
   * Put locks around the shared data to ensure only one thread can access it at the same time.
 
+### Deadlock / Livelock
+Two processes are **deadlocked**  if they are both holding a resource while waiting for a resource held by the other, and as a consequence neither can procced with its exceution. A **livelock** are similar to a deadlock, except that the states of the processes involved constantly change with respect to each other, but none progressing in its excecution.
 
-### Deadlock
-Two processes are deadlocked if they are both holding a resource while waiting for a resource held by the other
+_
+A real-world example of a **livelock** occurs when two people meet in a narrow
+corridor, and each tries to be polite by moving aside to let the other pass,
+but they end up swaying from side to side without making any progress because
+they both repeatedly move the same way at the same time.
+_
 
 ### Starvation (indefinite postponement)
 * A task wishes to gain access to a resource through a critical section, but is never allowed to do so because there are always other tasks gaining access before it. (Through unfair scheduling)
@@ -81,7 +90,9 @@ Two processes are deadlocked if they are both holding a resource while waiting f
 
 
 #### Common error in synchronization code
-* There is a danger of deadlock any time you wait for a semaphore while holding a mutex.
+* There is a danger of deadlock any time you wait for a semaphore while holding a mutex, easy to create a deadlock.
+* Be suspicious of functions that locks a mutex, but have several `return`statement...Easy to forget to unlock the mutex at one or more exit points.
+
 
 #### Lightswitch
 * First thread into a section locks a semaphore (or queues), and the last one unlocks it. This pattern is called a lightswitch
