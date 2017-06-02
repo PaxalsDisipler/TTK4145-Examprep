@@ -74,6 +74,7 @@ _
 
 
 ### Monitors
+A **monitor** is a synchronization construct that allows threads to have both mutual exclusion and the ability to block for a certain condition to become true. Monitors also have a mechanism for signalling other threads that their condition has been met. A monitor consists of a mutex (lock) object and condition variables. A condition variable is basically a container of threads that are waiting for a certain condition. Monitors provide a mechanism for threads to temporarily give up exclusive access in order to wait for some condition to be met, before regaining exclusive access and resuming their task.
 * Conditional critical regions can be dispersed throughout the program.
 * Provides more structured control regions.
 * Critical regions are written as procedures and encapsulated together into a single module called a monitor.
@@ -90,7 +91,7 @@ _
 
 
 #### Common error in synchronization code
-* There is a danger of deadlock any time you wait for a semaphore while holding a mutex, easy to create a deadlock.
+* There is a danger of deadlock any time you wait for a semaphore while holding a mutex.
 * Be suspicious of functions that locks a mutex, but have several `return`statement...Easy to forget to unlock the mutex at one or more exit points.
 
 
