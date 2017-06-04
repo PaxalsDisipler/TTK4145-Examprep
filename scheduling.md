@@ -20,7 +20,7 @@ If the predictions are decided prior to execution, the scheduling scheme is said
 _Many of these are not very realistic_.
   * All applications are assumed to consist of a fixed set of of tasks. (No sporadic tasks. Not optimal, but can we worked around)
   * All tasks are periodic, with known periods. (Realistic in many systems)
-  * The tasks are independent. (Completely realistic in an embedded system.)
+  * The tasks are independent. (Completely unrealistic in an embedded system.)
   * All system overheads, context-switching times and so on are ignored (i.e. assumed to have zero cost). (Depends)
   * All tasks have a deadline equal to their period (that is, each task must complete before it is next released). (Inflexible, but fair enough)
   * All tasks have a fixed worst case execution time. (Not realistic to know a tight, not overly conservative estimate.)
