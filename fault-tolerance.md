@@ -1,12 +1,12 @@
 ## Fault Tolerance
 The basic idea with building a _fault tolerant_ system is to (ideally gracefully) handle both foreseen **and** unforeseen errors in the system. As the name hints at the unforeseen errors are the most challenging to handle.
 
-* If faults occur we want to continue operation, albeit at a lower capacity.
+* If faults occur we want to continue operation, but maybe at a lower capacity.
 * The system should behave as specified even in the presence of bugs.
 * Testing can only show the presence of bugs, not the absence.
 * Testing cannot ensure a fault-free system.
 * Testing cannot find errors in the specification.
-* Testing cannot find race conditions.
+* Testing cannot eliminate all race conditions, and often are only trivial ones detected.
 
 Testing is not good enough! We must handle all errors, also the unexpected ones.
 
@@ -127,7 +127,7 @@ Two main classes
 We may also detect unexpected errors by the use of __acceptance tests__. We give demands to the correct state/result rather than testing on error situations. Lastly, we may have __static redundancy__. Given intermittent errors or independent systems, this catches errors that would otherwise be impossible.
 
 ### Damage confinement and assessment
-We must assess the damage that may have occured. Damage confiement is about structuring the system in such a way as to minimize the effects of a faulty component. Two techniques, __modular decomposition__ and __atomic actions__. Interaction with components occurs through well-defined interfaces.
+We must assess the damage that may have occured. Damage confinement is about structuring the system in such a way as to minimize the effects of a faulty component. Two techniques, __modular decomposition__ and __atomic actions__. Interaction with components occurs through well-defined interfaces.
 
 #### Modular decomposition
 Break the system into modules. Each component represented by one or more modules.
